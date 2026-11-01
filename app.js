@@ -11,7 +11,7 @@ const DIAMOND = ["ar", "hidro", "oleo", "estat", "risco"];
 
 /* ===================== Estado (guardado no aparelho) ===================== */
 const PADRAO = {
-  aba: "lentes", tipo: "multifocal", lente: "advanced-pro", campo: "mapa", foto: 0, tecLente: null, tecSel: "ff",
+  aba: "lentes", tipo: "multifocal", lente: "advanced-pro", campo: "mapa", fotoPorLente: {}, tecLente: null, tecSel: "ff",
   sobrepor: false, sobreMats: ["cr39", "167"],
   rx: { od: { esf: -2, cil: 0, eixo: 0 }, oe: { esf: -2, cil: 0, eixo: 0 }, ad: 0 }, olho: null, rxCampo: "od.esf",
   diam: 58, perfil: [], material: "cr39",
@@ -103,12 +103,17 @@ const FOTOS_CAMPO = [
 // contorno da lente igual ao das ilustrações do fabricante (desenhado em 700 × 513)
 const CONTORNO_LENTE = "M30,120 C60,70 250,40 450,32 C560,28 640,50 670,95 C700,140 698,230 690,300 C680,390 640,460 560,495 C470,525 260,515 160,490 C70,465 20,400 8,320 C0,250 5,165 30,120 Z";
 
+// lentes ocupacionais abrem na foto da rotina delas; depois o botão passa pelas outras
+const fotosDa = (l) => (l.cena ? [l.cena, ...FOTOS_CAMPO] : FOTOS_CAMPO);
+const fotoIdx = (l) => estado.fotoPorLente[l.id] ?? 0;
+
 let uid = 0;
 function campoSVG(l) {
   const id = `c${uid++}`;
   const [L, I, P] = l.notas || [5, 5, 5];
   const W = 600, H = 440, cx = 300;
-  const foto = FOTOS_CAMPO[estado.foto % FOTOS_CAMPO.length];
+  const fotos = fotosDa(l);
+  const foto = fotos[fotoIdx(l) % fotos.length];
   const largo = foto.prop >= W / H;
   const iw = largo ? H * foto.prop : W, ih = largo ? H : W / foto.prop;
   const ix = (W - iw) / 2, iy = largo ? 0 : Math.min(0, Math.max(H - ih, H / 2 - foto.fy * ih));
@@ -134,7 +139,7 @@ function campoSVG(l) {
     if (l.campo === "driver") rotulos += rot(70, 200, "Retrovisor", "start") + rot(530, 200, "Retrovisor", "end");
   } else if (l.campo === "office") {
     zona = `M${cx - 150},48 L${cx + 150},48 C${cx + 215},70 ${cx + 235},150 ${cx + 240},210 L${cx + 262},${H} L${cx - 262},${H} L${cx - 240},210 C${cx - 235},150 ${cx - 215},70 ${cx - 150},48 Z`;
-    rotulos = rot(cx, 34, "longe: use o óculos de rua") + rot(cx, 125, "ATÉ 2–4 METROS") + rot(cx, 245, "COMPUTADOR") + rot(cx, 375, "PERTO · PAPEL");
+    rotulos = rot(cx, 66, "longe: use o óculos de rua") + rot(cx, 125, "ATÉ 2–4 METROS") + rot(cx, 245, "COMPUTADOR") + rot(cx, 375, "PERTO · PAPEL");
   } else {
     zona = `M0,0 H${W} V${H} H0 Z`;
     if (l.campo === "relax") {
@@ -230,7 +235,7 @@ function desenharDetalhe() {
           : `<div class="field-sim">${campoSVG(l)}
             <button class="field-troca" id="btnFoto" aria-label="Trocar a imagem">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3M20 4v5h-5M20 12a8 8 0 0 1-14 5.3M4 20v-5h5"/></svg>
-              Trocar imagem <small>${(estado.foto % FOTOS_CAMPO.length) + 1}/${FOTOS_CAMPO.length} · ${FOTOS_CAMPO[estado.foto % FOTOS_CAMPO.length].nome}</small></button></div>`}
+              Trocar imagem <small>${(fotoIdx(l) % fotosDa(l).length) + 1}/${fotosDa(l).length} · ${fotosDa(l)[fotoIdx(l) % fotosDa(l).length].nome}</small></button></div>`}
         <div class="field-legend">
           <span><i style="background:#6fd1c5"></i>Área nítida</span>
           <span><i style="background:#cfc8b8"></i>Área desfocada (laterais)</span>
@@ -275,7 +280,10 @@ $("#lensDetail").addEventListener("click", (e) => {
   const l = porId(estado.lente);
   const campo = e.target.closest("[data-campo]");
   if (campo) { estado.campo = campo.dataset.campo; desenharDetalhe(); salvar(); return; }
-  if (e.target.closest("#btnFoto")) { estado.foto = (estado.foto + 1) % FOTOS_CAMPO.length; desenharDetalhe(); salvar(); return; }
+  if (e.target.closest("#btnFoto")) {
+    estado.fotoPorLente = { ...estado.fotoPorLente, [l.id]: (fotoIdx(l) + 1) % fotosDa(l).length };
+    desenharDetalhe(); salvar(); return;
+  }
   const tec = e.target.closest("[data-tec]");
   if (tec) {
     const k = tec.dataset.tec;

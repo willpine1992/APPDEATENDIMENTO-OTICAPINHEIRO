@@ -129,6 +129,7 @@ const LENTES = [
     atividades: ["Curtas distâncias", "Computador", "TV", "Ler", "Adaptação"],
     notas: [1, 5, 5, 5, 5], adicao: "0,75 a 3,50", altura: "14 mm", materiais: TODOS_MATERIAIS, alcance: "2 ou 4 metros",
     tecs: ["sp", "pu", "ff", "dr", "ti", "as", "ds", "vd", "br"], campo: "office",
+    cena: { src: "img/cenas/office.jpg", nome: "Escritório", prop: 590 / 393, fy: 0.5 },
     fala: [
       "Não substitui o óculos de rua: é para a mesa de trabalho.",
       "Tela, papel e reunião ficam nítidos sem levantar o queixo.",
@@ -143,6 +144,7 @@ const LENTES = [
     atividades: ["Dirigir", "Adaptação"],
     notas: [5, 4, 4, 5, 4], adicao: "0,75 a 3,50", altura: "14 mm", materiais: TODOS_MATERIAIS,
     tecs: ["sp", "pu", "ff", "ca", "dr", "ti", "as", "ds", "br"], campo: "driver",
+    cena: { src: "img/cenas/driver.jpg", nome: "Dirigindo", prop: 474 / 360, fy: 0.45 },
     fala: [
       "Estrada, painel e retrovisores com pouco movimento de cabeça.",
       "Combine com antirreflexo Diamond: menos reflexo dos faróis à noite.",
@@ -158,6 +160,7 @@ const LENTES = [
     notas: [5, 5, 5, 5, 5], adicao: null, altura: "—", materiais: TODOS_MATERIAIS,
     potencia: "0,50 (30 a 35 anos) · 0,75 (35 a 39) · 1,00 (40 a 42)",
     tecs: ["sp", "ff", "as", "ds", "vd", "br"], campo: "relax",
+    cena: { src: "img/cenas/relax.jpg", nome: "Celular", prop: 1000 / 900, fy: 0.5 },
     fala: [
       "Parece uma visão simples, mas tem um 'empurrãozinho' para perto na parte de baixo.",
       "O apoio é escolhido pela idade: 0,50, 0,75 ou 1,00.",
