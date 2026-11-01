@@ -29,14 +29,26 @@ if (estado.esf !== undefined) {
   delete estado.esf; delete estado.cil;
 }
 estado.escolha = { ...PADRAO.escolha, ...estado.escolha };
-const salvar = () => { try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch { /* sem armazenamento */ } };
+// toda mudança de estado passa por aqui: grava no aparelho e atualiza a barra de escolhas
+const salvar = () => {
+  try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch { /* sem armazenamento */ }
+  desenharFiltros();
+};
 
-function aviso(texto) {
+// acao = { texto, fn }: mostra um botão no aviso (ex.: Desfazer)
+function aviso(texto, acao) {
   const t = $("#toast");
   t.textContent = texto;
+  t.classList.toggle("toast--acao", !!acao);
+  if (acao) {
+    const b = document.createElement("button");
+    b.textContent = acao.texto;
+    b.addEventListener("click", () => { t.classList.remove("is-on"); acao.fn(); });
+    t.append(b);
+  }
   t.classList.add("is-on");
   clearTimeout(aviso.timer);
-  aviso.timer = setTimeout(() => t.classList.remove("is-on"), 2200);
+  aviso.timer = setTimeout(() => t.classList.remove("is-on"), acao ? 6000 : 2200);
 }
 
 function estrelas(notas) {
@@ -1357,6 +1369,57 @@ $("#btnNovo").addEventListener("click", () => {
   salvar();
   iniciar();
   aviso("Pronto para o próximo cliente");
+});
+
+/* ===================== Barra de escolhas ===================== */
+const RX_VAZIA = () => structuredClone(PADRAO.rx);
+function filtrosAtuais() {
+  const f = [];
+  const tem = (k) => estado.trat.includes(k);
+  const rx = estado.rx, vazia = RX_VAZIA();
+  if (JSON.stringify(rx) !== JSON.stringify(vazia)) f.push({ id: "rx", aba: "materiais", tipo: "Receita", txt: textoRx() });
+  if (estado.escolha.lente) f.push({ id: "lente", aba: "lentes", tipo: "Lente", txt: `Inoovax ${porId(estado.escolha.lente).nome}` });
+  if (estado.escolha.material) f.push({ id: "material", aba: "materiais", tipo: "Material", txt: matPorId(estado.escolha.material).nome });
+  estado.perfil.forEach((p) => f.push({ id: `perfil:${p}`, aba: "materiais", tipo: "Uso", txt: $(`#chipsPerfil [data-p="${p}"]`)?.textContent || p }));
+  if (DIAMOND.every(tem)) f.push({ id: "trat:diamond", aba: "tratamentos", tipo: "Tratamento", txt: "Diamond completo" });
+  else DIAMOND.filter(tem).forEach((k) => f.push({ id: `trat:${k}`, aba: "tratamentos", tipo: "Tratamento", txt: tratPorId(k).nome }));
+  if (tem("azul")) f.push({ id: "trat:azul", aba: "tratamentos", tipo: "Tratamento", txt: "Filtro azul" });
+  if (tem("foto")) f.push({ id: "trat:foto", aba: "tratamentos", tipo: "Tratamento", txt: `Transitions ${CORES_TRANSITIONS[estado.cor][0]}` });
+  if (estado.opcoes.length) f.push({ id: "opcoes", aba: "resumo", tipo: "Orçamento", txt: estado.opcoes.length > 2 ? `${estado.opcoes.length} opções` : estado.opcoes.map((o) => reais(o.preco)).join(" / ") });
+  return f;
+}
+
+function desenharFiltros() {
+  const f = filtrosAtuais();
+  $("#filtros").hidden = !f.length;
+  $("#filtrosLista").innerHTML = f.map((x) => `<span class="filtro" data-aba="${x.aba}">
+    <button class="filtro__ir" data-ir-f="${x.aba}"><small>${x.tipo}</small>${x.txt}</button>
+    <button class="filtro__x" data-tirar-f="${x.id}" aria-label="Tirar ${x.tipo.toLowerCase()}: ${x.txt}">×</button></span>`).join("");
+}
+
+function tirarFiltro(id) {
+  const [k, v] = id.split(":");
+  if (k === "rx") estado.rx = RX_VAZIA();
+  if (k === "lente") estado.escolha.lente = null;
+  if (k === "material") estado.escolha.material = null;
+  if (k === "perfil") estado.perfil = estado.perfil.filter((p) => p !== v);
+  if (k === "trat") estado.trat = estado.trat.filter((t) => (v === "diamond" ? !DIAMOND.includes(t) : t !== v));
+  if (k === "opcoes") estado.opcoes = [];
+  estado.cfg = null;
+}
+
+$("#filtros").addEventListener("click", (e) => {
+  const x = e.target.closest("[data-tirar-f]");
+  if (x) { tirarFiltro(x.dataset.tirarF); iniciar(); return; }
+  const ir = e.target.closest("[data-ir-f]");
+  if (ir) { irPara(ir.dataset.irF); return; }
+  if (e.target.closest("#btnLimpar")) {
+    const antes = structuredClone(estado);
+    ["rx", "lente", "material", "trat:diamond", "trat:azul", "trat:foto", "opcoes"].forEach(tirarFiltro);
+    estado.trat = []; estado.perfil = [];
+    iniciar();
+    aviso("Escolhas limpas", { texto: "Desfazer", fn: () => { estado = antes; iniciar(); aviso("Escolhas de volta"); } });
+  }
 });
 
 /* ===================== Início ===================== */
