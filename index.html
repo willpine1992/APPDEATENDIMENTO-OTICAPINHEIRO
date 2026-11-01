@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Apresentador de Lentes · Ótica Pinheiro</title>
+  <meta name="description" content="Ferramenta do vendedor para explicar ao cliente as lentes Inoovax: tipos, tecnologias, materiais, espessura e tratamentos.">
+  <meta name="theme-color" content="#e9f1ee">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Lentes">
+  <link rel="icon" href="img/favicon.png">
+  <link rel="apple-touch-icon" href="img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="img/logo.png" alt="Ótica Pinheiro" width="44" height="44">
+      <div><strong>Apresentador de Lentes</strong><span>Inoovax · Ótica Pinheiro</span></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Seções">
+      <button role="tab" data-tab="lentes" aria-selected="true"><b>1</b><svg class="t-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.5" cy="14" r="3.6"/><circle cx="17.5" cy="14" r="3.6"/><path d="M10.1 13.4c1.2-.9 2.6-.9 3.8 0M2.9 13.6 2 9.5M21.1 13.6 22 9.5"/></svg><span class="t-lg">Tipos de lente</span><span class="t-sm">Lentes</span></button>
+      <button role="tab" data-tab="tecnologias" aria-selected="false"><b>2</b><svg class="t-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2.5"/><path d="M10 3v3M14 3v3M10 18v3M14 18v3M3 10h3M3 14h3M18 10h3M18 14h3"/></svg><span class="t-lg">Tecnologias</span><span class="t-sm">Tecnologia</span></button>
+      <button role="tab" data-tab="materiais" aria-selected="false"><b>3</b><svg class="t-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 3 8.5l9 4.5 9-4.5L12 4Z"/><path d="m3 12.5 9 4.5 9-4.5M3 16.5l9 4.5 9-4.5"/></svg><span class="t-lg">Materiais e espessura</span><span class="t-sm">Materiais</span></button>
+      <button role="tab" data-tab="tratamentos" aria-selected="false"><b>4</b><svg class="t-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5c3.2 4 6 7 6 10.6a6 6 0 0 1-12 0C6 10.5 8.8 7.5 12 3.5Z"/><path d="M9.5 14.5a2.6 2.6 0 0 0 2.5 2.4"/></svg><span class="t-lg">Tratamentos</span><span class="t-sm">Tratamentos</span></button>
+      <button role="tab" data-tab="resumo" aria-selected="false"><b>5</b><svg class="t-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="m8 12 2.6 2.6L16 9.4"/></svg><span class="t-lg">Orçamento</span><span class="t-sm">Orçamento</span> <i class="badge" id="badgeResumo" hidden>0</i></button>
+    </nav>
+    <button class="icon-btn" id="btnTela" title="Tela cheia" aria-label="Tela cheia">
+      <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <!-- ===================== 1. LENTES ===================== -->
+    <section class="panel" id="p-lentes" role="tabpanel">
+      <div class="lentes-layout">
+        <aside class="rail">
+          <p class="eyebrow">Tipo de lente</p>
+          <div class="seg" id="segTipo" role="radiogroup" aria-label="Tipo de lente"></div>
+          <p class="rail__tipo" id="tipoResumo"></p>
+          <div class="lens-list" id="lensList"></div>
+        </aside>
+        <div class="detail" id="lensDetail"></div>
+      </div>
+    </section>
+
+    <!-- ===================== 2. TECNOLOGIAS ===================== -->
+    <section class="panel" id="p-tecnologias" role="tabpanel" hidden>
+      <div class="head">
+        <div>
+          <p class="eyebrow">O que tem dentro de cada lente</p>
+          <h1>Tecnologias Inoovax</h1>
+          <p class="muted">Toque numa tecnologia para ver a explicação. As colunas mostram em quais lentes ela está.</p>
+        </div>
+      </div>
+      <div class="tec-layout">
+        <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+        <article class="tec-card" id="tecCard"></article>
+      </div>
+    </section>
+
+    <!-- ===================== 3. MATERIAIS ===================== -->
+    <section class="panel" id="p-materiais" role="tabpanel" hidden>
+      <div class="mat-layout">
+        <aside class="rail controls">
+          <p class="eyebrow">Receita do cliente</p>
+          <div class="rx" id="rx">
+            <table class="rx-tab">
+              <thead><tr><th></th><th>Esférico</th><th>Cilíndrico</th><th>Eixo</th></tr></thead>
+              <tbody>
+                <tr><th>OD</th>
+                  <td><input data-rx="od.esf" inputmode="decimal" autocomplete="off" aria-label="Olho direito, esférico"></td>
+                  <td><input data-rx="od.cil" inputmode="decimal" autocomplete="off" aria-label="Olho direito, cilíndrico"></td>
+                  <td><input data-rx="od.eixo" inputmode="numeric" autocomplete="off" placeholder="—" aria-label="Olho direito, eixo"></td></tr>
+                <tr><th>OE</th>
+                  <td><input data-rx="oe.esf" inputmode="decimal" autocomplete="off" aria-label="Olho esquerdo, esférico"></td>
+                  <td><input data-rx="oe.cil" inputmode="decimal" autocomplete="off" aria-label="Olho esquerdo, cilíndrico"></td>
+                  <td><input data-rx="oe.eixo" inputmode="numeric" autocomplete="off" placeholder="—" aria-label="Olho esquerdo, eixo"></td></tr>
+              </tbody>
+            </table>
+            <label class="rx-ad">Adição <input data-rx="ad" inputmode="decimal" autocomplete="off" placeholder="—" aria-label="Adição"></label>
+            <div class="rx-step">
+              <button data-rxd="-1" aria-label="Diminuir">−</button>
+              <span><small>Ajustando</small><strong id="rxCampo">OD · esférico</strong></span>
+              <button data-rxd="1" aria-label="Aumentar">+</button>
+              <button class="rx-sinal" data-rxsinal aria-label="Trocar o sinal">±</button>
+            </div>
+            <button class="rx-copia" id="btnCopiaOE">Copiar OD para OE</button>
+          </div>
+
+          <p class="eyebrow">Tamanho da lente</p>
+          <div class="chips" id="chipsDiam">
+            <button data-d="52">Armação pequena</button>
+            <button data-d="58">Média</button>
+            <button data-d="62">Grande</button>
+            <button data-d="65">Catálogo (65 mm)</button>
+          </div>
+          <div class="stepper">
+            <label for="rngDiam">Diâmetro útil <output id="outDiam">58 mm</output></label>
+            <input type="range" id="rngDiam" min="44" max="75" step="1" value="58">
+          </div>
+
+          <p class="eyebrow">Perfil de uso</p>
+          <div class="chips chips--multi" id="chipsPerfil">
+            <button data-p="crianca">Criança</button>
+            <button data-p="esporte">Esporte / trabalho pesado</button>
+            <button data-p="parafuso">Armação parafusada ou fio de nylon</button>
+          </div>
+        </aside>
+
+        <div class="mat-main">
+          <div class="card section-card">
+            <div class="xs-head">
+              <div>
+                <p class="eyebrow">Corte da lente em tamanho real</p>
+                <h2 id="xsTitulo">CR-39</h2>
+                <div class="chips chips--olho" id="chipsOlho" aria-label="Olho mostrado no corte">
+                  <button data-olho="od">Olho direito (OD)</button>
+                  <button data-olho="oe">Olho esquerdo (OE)</button>
+                </div>
+              </div>
+              <div class="xs-stats" id="xsStats"></div>
+            </div>
+            <svg id="xsSvg" class="xs-svg" role="img" aria-label="Corte transversal da lente"></svg>
+            <div class="xs-modo">
+              <label class="switch"><input type="checkbox" id="chkSobrepor"><span></span> Comparar materiais sobrepostos</label>
+              <span class="muted tiny" id="xsNota"></span>
+            </div>
+            <div id="xsLegenda"></div>
+          </div>
+
+          <div class="mat-grid">
+            <div class="card">
+              <p class="eyebrow">Compare os materiais neste grau</p>
+              <div class="mat-rows" id="matRows"></div>
+              <p class="tiny muted">* Peso estimado de uma lente, no olho mostrado no corte. Espessura e peso estimados para uma lente redonda, calibrados com a tabela do Cardápio Inoovax. O valor final depende da armação, da altura e da centralização.</p>
+            </div>
+            <div class="card mat-info" id="matInfo"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 4. TRATAMENTOS ===================== -->
+    <section class="panel" id="p-tratamentos" role="tabpanel" hidden>
+      <div class="trat-layout">
+        <aside class="rail">
+          <p class="eyebrow">Antirreflexo Diamond · 5 camadas</p>
+          <button class="btn btn--soft btn--block" id="btnDiamond">Ligar o pacote Diamond completo</button>
+          <div class="trat-list" id="tratDiamond"></div>
+          <p class="eyebrow">Opcionais</p>
+          <div class="trat-list" id="tratExtra"></div>
+          <div class="foto-ctrl" id="fotoCtrl" hidden>
+            <p class="eyebrow">Cor Transitions Gen S</p>
+            <div class="swatches" id="swatches" role="radiogroup" aria-label="Cor"></div>
+            <p class="eyebrow">Onde a pessoa está</p>
+            <div class="chips" id="chipsLuz">
+              <button data-luz="interno">Dentro de casa</button>
+              <button data-luz="nublado">Nublado</button>
+              <button data-luz="sol">Sol forte</button>
+              <button data-luz="carro">Dentro do carro</button>
+            </div>
+          </div>
+        </aside>
+
+        <div class="trat-main">
+          <div class="sim-bar">
+            <div class="chips" id="chipsCena" aria-label="Cena">
+              <button data-cena="dia">☀︎ Vitrine</button>
+              <button data-cena="noite">☾ Noite no trânsito</button>
+              <button data-cena="tela">▭ Celular no escuro</button>
+              <button data-cena="sol">☼ Rua ao sol</button>
+            </div>
+            <label class="switch"><input type="checkbox" id="chkComparar" checked><span></span> Comparar sem × com</label>
+          </div>
+          <div class="sim" id="sim">
+            <svg id="simSvg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Simulação da visão através do óculos"></svg>
+            <div class="sim-labels" id="simLabels"><span>SEM tratamento</span><span>COM o que foi escolhido</span></div>
+          </div>
+          <div class="sim-bar sim-bar--bottom">
+            <label class="range-inline">Tempo de uso <input type="range" id="rngUso" min="0" max="24" step="1" value="6"> <output id="outUso">6 meses</output></label>
+            <button class="btn btn--soft" id="btnFlanela">Passar a flanela</button>
+            <button class="btn btn--soft" id="btnAgua">Molhar a lente</button>
+          </div>
+
+          <div class="trat-info">
+            <article class="card" id="tratTexto"></article>
+            <article class="card camadas-card">
+              <p class="eyebrow">Como as camadas ficam na lente</p>
+              <svg id="camadas" viewBox="0 0 420 260" role="img" aria-label="Camadas do tratamento antirreflexo Diamond"></svg>
+            </article>
+            <article class="card" id="fotoFab"></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ORÇAMENTO ===================== -->
+    <section class="panel" id="p-resumo" role="tabpanel" hidden>
+      <div class="head orc-head">
+        <div>
+          <p class="eyebrow">Portfólio Inoovax · preço ao consumidor</p>
+          <h1>Orçamento</h1>
+        </div>
+        <div class="chips" id="chipsOrcVista">
+          <button data-vista="montar">Montar orçamento</button>
+          <button data-vista="tabela">Tabela de preços</button>
+        </div>
+      </div>
+      <div class="resumo-layout">
+        <div class="card orc-card" id="orcMontar"></div>
+        <div class="card orc-card" id="orcTabela" hidden></div>
+        <div class="card resumo-acoes">
+          <p class="eyebrow">Orçamento do cliente</p>
+          <label class="field">Nome do cliente (opcional)<input id="inpNome" autocomplete="off" placeholder="Ex.: Maria"></label>
+          <div id="orcOpcoes"></div>
+          <hr>
+          <label class="field">WhatsApp do cliente (opcional)<input id="inpFone" inputmode="tel" autocomplete="off" placeholder="(92) 9____-____"></label>
+          <button class="btn btn--wa btn--block" id="btnWa">Enviar orçamento pelo WhatsApp</button>
+          <button class="btn btn--soft btn--block" id="btnCopiar">Copiar texto</button>
+          <button class="btn btn--ghost btn--block" id="btnNovo">Novo atendimento (limpar tudo)</button>
+          <pre class="preview" id="resumoTexto"></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="sheet" id="cmpSheet" aria-labelledby="cmpTitle">
+    <div class="sheet__head">
+      <h2 id="cmpTitle">Comparar lentes</h2>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="cmp" id="cmpBody"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="dados.js"></script>
+  <script src="precos.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
